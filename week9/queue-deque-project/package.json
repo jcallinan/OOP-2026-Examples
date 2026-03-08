@@ -11,7 +11,7 @@
     "example:browser-history": "node src/examples/browser-history-example.js",
     "example:hot-potato": "node src/examples/hot-potato-example.js",
     "example:palindrome": "node src/examples/palindrome-example.js",
-    "build:ts": "rm -rf .tmp && node ../../week7/JavaScript-Chapter1-JS-and-TS/node_modules/typescript/bin/tsc --target ES2020 --module commonjs --outDir .tmp src/count-students.ts src/examples/count-students-example.ts",
+    "build:ts": "node -e \"require('fs').rmSync('.tmp',{recursive:true,force:true})\" && node ../../week7/JavaScript-Chapter1-JS-and-TS/node_modules/typescript/bin/tsc --target ES2020 --module commonjs --outDir .tmp src/count-students.ts src/examples/count-students-example.ts",
     "example:count-students": "npm run build:ts && node .tmp/examples/count-students-example.js"
   }
 }
