@@ -59,13 +59,13 @@
     <div class="panel">
       <div class="title">Deque Controls</div>
       <div class="controls">
-        <input id="value" value="Page-Home" placeholder="value" />
+        <input id="value" value="Ticket-1042" placeholder="ticket id" />
         <button class="af" onclick="addFront()">Add Front</button>
         <button class="ar" onclick="addRear()">Add Rear</button>
         <button class="rf" onclick="removeFront()">Remove Front</button>
         <button class="rr" onclick="removeRear()">Remove Rear</button>
         <button class="peek" onclick="peekBoth()">Peek Front/Rear</button>
-        <button class="sample" onclick="seedHistory()">Seed Browser History</button>
+        <button class="sample" onclick="seedSupportDesk()">Seed Support Desk</button>
         <button class="clear" onclick="clearDeque()">Clear</button>
       </div>
 
@@ -83,8 +83,9 @@
       <div class="panel">
         <div class="title">Why Deque?</div>
         <p style="color:var(--muted); line-height:1.75;">
-          A deque supports insertion and removal at <b>both ends</b>. It can model browser history, undo/redo,
-          and palindrome checks. This visualizer highlights the current front and rear after every operation.
+          A deque supports insertion and removal at <b>both ends</b>. This example models a support desk queue:
+          urgent tickets can be pushed to the <b>front</b>, while standard tickets are added to the <b>rear</b>.
+          The visualizer highlights the current front and rear after each operation.
         </p>
       </div>
       <div class="panel">
@@ -167,10 +168,13 @@
       render('Peeked both ends');
     }
     function clearDeque() { deque.clear(); log('clear()'); render('Cleared'); }
-    function seedHistory() {
+    function seedSupportDesk() {
       deque.clear();
-      ['loiane.com', 'loiane.com/about', 'loiane.com/courses'].forEach((u) => deque.addFront(u));
-      log('Seeded deque with browser-like history');
+      deque.addFront('Urgent: Login outage');
+      deque.addRear('Ticket-1041: Password reset');
+      deque.addRear('Ticket-1042: Billing question');
+      deque.addRear('Ticket-1043: Feature request');
+      log('Seeded deque with support desk tickets');
       render('Seeded');
     }
 

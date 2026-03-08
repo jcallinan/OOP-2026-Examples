@@ -14,8 +14,13 @@ Included snippets:
 - `isPalindrome` checker
 - TypeScript `countStudents` solution snippet
 
-Run examples:
+## Run examples
 
 ```bash
-npm start
+npm run example:all
+npm run example:queue
+npm run example:deque
+npm run example:browser-history
+npm run example:hot-potato
+npm run example:palindrome
 ```
