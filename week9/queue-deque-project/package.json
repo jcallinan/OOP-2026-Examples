@@ -1,0 +1,22 @@
+{
+  "name": "week9-queue-deque-project",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Code extracted from week9/5 Queues and Deques.pdf",
+  "scripts": {
+    "start": "node src/examples.js",
+    "example:all": "node src/examples.js",
+    "example:queue": "node src/examples/queue-example.js",
+    "example:deque": "node src/examples/deque-example.js",
+    "example:browser-history": "node src/examples/browser-history-example.js",
+    "example:hot-potato": "node src/examples/hot-potato-example.js",
+    "example:palindrome": "node src/examples/palindrome-example.js",
+    "build:ts": "node scripts/build-ts.js",
+    "example:count-students": "npm run build:ts && node .tmp/examples/count-students-example.js",
+    "example:circular-queue-motivation": "node src/examples/circular-queue-motivation-example.js",
+    "example:common-mistakes": "node src/examples/common-mistakes-example.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2"
+  }
+}
