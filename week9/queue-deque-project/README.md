@@ -23,4 +23,5 @@ npm run example:deque
 npm run example:browser-history
 npm run example:hot-potato
 npm run example:palindrome
+npm run example:count-students
 ```
