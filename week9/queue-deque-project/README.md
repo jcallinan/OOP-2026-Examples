@@ -24,4 +24,6 @@ npm run example:browser-history
 npm run example:hot-potato
 npm run example:palindrome
 npm run example:count-students
+npm run example:circular-queue-motivation
+npm run example:common-mistakes
 ```

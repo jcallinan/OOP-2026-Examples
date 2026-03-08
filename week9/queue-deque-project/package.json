@@ -12,6 +12,8 @@
     "example:hot-potato": "node src/examples/hot-potato-example.js",
     "example:palindrome": "node src/examples/palindrome-example.js",
     "build:ts": "node scripts/build-ts.js",
-    "example:count-students": "npm run build:ts && node .tmp/examples/count-students-example.js"
+    "example:count-students": "npm run build:ts && node .tmp/examples/count-students-example.js",
+    "example:circular-queue-motivation": "node src/examples/circular-queue-motivation-example.js",
+    "example:common-mistakes": "node src/examples/common-mistakes-example.js"
   }
 }
