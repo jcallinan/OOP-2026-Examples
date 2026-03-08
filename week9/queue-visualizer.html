@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Queue Visualizer</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap');
+
+    :root {
+      --bg: #0f1b35;
+      --panel: #12234a;
+      --panel-2: #0a1630;
+      --text: #e8eef7;
+      --muted: #8ba3c7;
+      --accent: #f5a623;
+      --teal: #14a098;
+      --danger: #e74c3c;
+      --good: #3ddc84;
+      --border: #2a3f6f;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: radial-gradient(circle at top right, #1a2c5b 0%, var(--bg) 55%);
+      color: var(--text);
+      font-family: Inter, sans-serif;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .wrap { max-width: 1100px; margin: 0 auto; display: grid; gap: 16px; }
+
+    .header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 16px; border-radius: 10px; background: var(--accent); color: #0f1b35;
+      font-weight: 700;
+    }
+
+    .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
+
+    .title { font-size: 13px; text-transform: uppercase; letter-spacing: .6px; color: var(--accent); margin-bottom: 12px; font-weight: 700; }
+
+    .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+    input {
+      background: #1e3460;
+      color: var(--text);
+      border: 1px solid #3a5080;
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    button {
+      border: none; border-radius: 6px; padding: 9px 12px;
+      color: #fff; font-weight: 700; cursor: pointer;
+      transition: transform .12s ease, opacity .12s ease;
+    }
+    button:hover { transform: translateY(-1px); opacity: .92; }
+    .enqueue { background: var(--teal); }
+    .dequeue { background: var(--danger); }
+    .peek { background: #355c7d; }
+    .clear { background: #24395f; }
+    .seed { background: #6c5ce7; }
+
+    .stats { margin-top: 12px; display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+    .card { background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
+    .card .k { color: var(--muted); font-size: 10px; text-transform: uppercase; }
+    .card .v { font: 700 16px 'JetBrains Mono', monospace; margin-top: 4px; }
+
+    .queue-track {
+      margin-top: 14px;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      min-height: 82px;
+      border: 1px dashed #3a5080;
+      border-radius: 8px;
+      padding: 10px;
+      background: #0a1630;
+      align-items: center;
+    }
+
+    .node {
+      min-width: 92px;
+      text-align: center;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #3a5080;
+      background: linear-gradient(160deg, #1e3460, #12234a);
+      font-family: 'JetBrains Mono', monospace;
+      animation: pop .18s ease;
+    }
+
+    .node small { display: block; font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+    .front { border-color: var(--good); box-shadow: inset 0 0 0 1px var(--good); }
+    .rear { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+
+    @keyframes pop { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: none; } }
+
+    .log { max-height: 370px; overflow-y: auto; font: 12px 'JetBrains Mono', monospace; line-height: 1.6; color: #cde1ff; }
+    .line { border-left: 3px solid #2f4b7f; padding-left: 8px; margin-bottom: 8px; }
+    .line b { color: var(--accent); }
+
+    .empty { color: var(--muted); font-style: italic; }
+
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } .stats{grid-template-columns:repeat(2,1fr);} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header"><span>📥 Queue Visualizer (FIFO)</span><span>Week 9 • Queues and Deques</span></div>
+
+    <div class="panel">
+      <div class="title">Operations</div>
+      <div class="controls">
+        <input id="value" placeholder="value" value="Document-A" />
+        <button class="enqueue" onclick="enqueueItem()">Enqueue</button>
+        <button class="dequeue" onclick="dequeueItem()">Dequeue</button>
+        <button class="peek" onclick="peekFront()">Front</button>
+        <button class="seed" onclick="seedPrinterQueue()">Seed Printer Queue</button>
+        <button class="clear" onclick="clearQueue()">Clear</button>
+      </div>
+
+      <div class="stats">
+        <div class="card"><div class="k">Size</div><div class="v" id="size">0</div></div>
+        <div class="card"><div class="k">Front</div><div class="v" id="front">—</div></div>
+        <div class="card"><div class="k">Rear</div><div class="v" id="rear">—</div></div>
+        <div class="card"><div class="k">Last Action</div><div class="v" id="action">Ready</div></div>
+      </div>
+
+      <div class="queue-track" id="track"><span class="empty">Queue is empty. Add items to begin.</span></div>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <div class="title">What this shows</div>
+        <p style="color:var(--muted);line-height:1.7;">
+          This demo shows a <b>first-in, first-out</b> queue. Items are added on the rear side and removed from the front side.
+          Use the controls to simulate real flows such as a print queue.
+        </p>
+      </div>
+      <div class="panel">
+        <div class="title">Event Log</div>
+        <div class="log" id="log"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    class Queue {
+      #items = [];
+      enqueue(item) { this.#items.push(item); }
+      dequeue() { return this.#items.shift(); }
+      front() { return this.#items[0]; }
+      rear() { return this.#items[this.#items.length - 1]; }
+      clear() { this.#items = []; }
+      get size() { return this.#items.length; }
+      toArray() { return [...this.#items]; }
+    }
+
+    const queue = new Queue();
+
+    function log(msg) {
+      const line = document.createElement('div');
+      line.className = 'line';
+      line.innerHTML = `<b>${new Date().toLocaleTimeString()}</b> — ${msg}`;
+      const logEl = document.getElementById('log');
+      logEl.prepend(line);
+    }
+
+    function refresh(action = 'Ready') {
+      const items = queue.toArray();
+      document.getElementById('size').textContent = queue.size;
+      document.getElementById('front').textContent = queue.front() ?? '—';
+      document.getElementById('rear').textContent = queue.rear() ?? '—';
+      document.getElementById('action').textContent = action;
+
+      const track = document.getElementById('track');
+      track.innerHTML = '';
+      if (items.length === 0) {
+        track.innerHTML = '<span class="empty">Queue is empty. Add items to begin.</span>';
+        return;
+      }
+
+      items.forEach((item, idx) => {
+        const node = document.createElement('div');
+        node.className = 'node';
+        if (idx === 0) node.classList.add('front');
+        if (idx === items.length - 1) node.classList.add('rear');
+        let label = '';
+        if (idx === 0) label += 'front';
+        if (idx === items.length - 1) label += (label ? ' / ' : '') + 'rear';
+        node.innerHTML = `<small>${label || 'queued'}</small>${item}`;
+        track.appendChild(node);
+      });
+    }
+
+    function enqueueItem() {
+      const input = document.getElementById('value');
+      const v = input.value.trim();
+      if (!v) return;
+      queue.enqueue(v);
+      log(`enqueue(<i>${v}</i>)`);
+      refresh('Enqueued');
+      input.value = '';
+      input.focus();
+    }
+
+    function dequeueItem() {
+      if (queue.size === 0) {
+        log('dequeue() ignored because queue is empty');
+        refresh('Dequeue ignored');
+        return;
+      }
+      const removed = queue.dequeue();
+      log(`dequeue() → <i>${removed}</i>`);
+      refresh('Dequeued');
+    }
+
+    function peekFront() {
+      const v = queue.front();
+      log(`front() → <i>${v ?? 'undefined'}</i>`);
+      refresh('Peeked front');
+    }
+
+    function clearQueue() {
+      queue.clear();
+      log('clear()');
+      refresh('Cleared');
+    }
+
+    function seedPrinterQueue() {
+      queue.clear();
+      ['Chapter05.docx', 'JavaScript.pdf', 'TypeScript.pdf'].forEach((d) => queue.enqueue(d));
+      log('Seeded queue with 3 print jobs');
+      refresh('Seeded');
+    }
+
+    refresh();
+  </script>
+</body>
+</html>

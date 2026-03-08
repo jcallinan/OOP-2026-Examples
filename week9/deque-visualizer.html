@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deque Visualizer</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap');
+
+    :root {
+      --bg: #0c142b; --panel: #121f42; --line: #304b80; --txt: #e8eef7; --muted: #98afd1;
+      --front: #3ddc84; --rear: #f5a623; --accent: #14a098; --warn: #e74c3c;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Inter, sans-serif;
+      color: var(--txt);
+      background: linear-gradient(135deg, #162a55 0%, var(--bg) 60%);
+      min-height: 100vh;
+      padding: 22px;
+    }
+
+    .app { max-width: 1120px; margin: 0 auto; display: grid; gap: 16px; }
+    .top { padding: 14px 16px; border-radius: 10px; background: #f5a623; color: #0f1b35; display:flex; justify-content:space-between; font-weight:700; }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; box-shadow: 0 8px 24px rgba(0,0,0,.34); }
+    .title { color: #f5a623; text-transform: uppercase; letter-spacing: .6px; font-size: 13px; margin-bottom: 12px; font-weight: 700; }
+
+    .controls { display:flex; flex-wrap: wrap; gap:8px; align-items:center; }
+    input { background:#1d3363; border:1px solid #48669f; border-radius:6px; color:var(--txt); padding:8px 10px; font-family:'JetBrains Mono',monospace; }
+    button { border:none; border-radius:6px; padding:9px 12px; font-weight:700; color:white; cursor:pointer; }
+    .af { background: #00a86b; } .ar { background: #f5a623; color:#12203d; }
+    .rf { background: #e74c3c; } .rr { background: #d35400; }
+    .peek { background: #355c7d; } .sample { background: #6c5ce7; } .clear { background:#22395f; }
+
+    .lane { margin-top: 14px; min-height: 90px; border: 1px dashed #48669f; border-radius: 8px; background:#0b1530; padding: 12px; display:flex; gap:8px; overflow-x:auto; align-items:center; }
+    .node { min-width: 110px; text-align:center; border:1px solid #48669f; border-radius: 8px; padding: 10px; font-family:'JetBrains Mono',monospace; background: linear-gradient(160deg, #1d3363, #13254d); }
+    .node small { display:block; font-size:10px; color:var(--muted); margin-bottom:4px; }
+    .node.front { box-shadow: inset 0 0 0 1px var(--front); border-color: var(--front); }
+    .node.rear { box-shadow: inset 0 0 0 1px var(--rear); border-color: var(--rear); }
+
+    .stats { margin-top:12px; display:grid; grid-template-columns: repeat(4,1fr); gap:8px; }
+    .s { background:#0b1530; border:1px solid var(--line); border-radius: 8px; padding: 10px; }
+    .s .k { font-size:10px; text-transform:uppercase; color:var(--muted);} .s .v { margin-top:4px; font:700 16px 'JetBrains Mono',monospace; }
+
+    .grid { display:grid; grid-template-columns: 1.3fr 1fr; gap:16px; }
+    .log { max-height: 360px; overflow-y:auto; font:12px 'JetBrains Mono', monospace; }
+    .entry { margin-bottom:8px; border-left:3px solid #425f96; padding-left:8px; }
+    .entry b { color:#f5a623; }
+    .empty { color: var(--muted); font-style:italic; }
+
+    @media (max-width: 900px) { .grid { grid-template-columns:1fr; } .stats{grid-template-columns:repeat(2,1fr);} }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="top"><span>↔️ Deque Visualizer (Double-Ended Queue)</span><span>Week 9 • Queues and Deques</span></div>
+
+    <div class="panel">
+      <div class="title">Deque Controls</div>
+      <div class="controls">
+        <input id="value" value="Page-Home" placeholder="value" />
+        <button class="af" onclick="addFront()">Add Front</button>
+        <button class="ar" onclick="addRear()">Add Rear</button>
+        <button class="rf" onclick="removeFront()">Remove Front</button>
+        <button class="rr" onclick="removeRear()">Remove Rear</button>
+        <button class="peek" onclick="peekBoth()">Peek Front/Rear</button>
+        <button class="sample" onclick="seedHistory()">Seed Browser History</button>
+        <button class="clear" onclick="clearDeque()">Clear</button>
+      </div>
+
+      <div class="stats">
+        <div class="s"><div class="k">Size</div><div class="v" id="size">0</div></div>
+        <div class="s"><div class="k">Front</div><div class="v" id="front">—</div></div>
+        <div class="s"><div class="k">Rear</div><div class="v" id="rear">—</div></div>
+        <div class="s"><div class="k">Last Action</div><div class="v" id="action">Ready</div></div>
+      </div>
+
+      <div class="lane" id="lane"><span class="empty">Deque is empty. Try adding front/rear values.</span></div>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <div class="title">Why Deque?</div>
+        <p style="color:var(--muted); line-height:1.75;">
+          A deque supports insertion and removal at <b>both ends</b>. It can model browser history, undo/redo,
+          and palindrome checks. This visualizer highlights the current front and rear after every operation.
+        </p>
+      </div>
+      <div class="panel">
+        <div class="title">Operation Log</div>
+        <div class="log" id="log"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    class Deque {
+      #items = [];
+      addFront(item) { this.#items.unshift(item); }
+      addRear(item) { this.#items.push(item); }
+      removeFront() { return this.#items.shift(); }
+      removeRear() { return this.#items.pop(); }
+      peekFront() { return this.#items[0]; }
+      peekRear() { return this.#items[this.#items.length - 1]; }
+      clear() { this.#items = []; }
+      size() { return this.#items.length; }
+      toArray() { return [...this.#items]; }
+    }
+
+    const deque = new Deque();
+
+    function log(message) {
+      const e = document.createElement('div');
+      e.className = 'entry';
+      e.innerHTML = `<b>${new Date().toLocaleTimeString()}</b> — ${message}`;
+      document.getElementById('log').prepend(e);
+    }
+
+    function render(action = 'Ready') {
+      const items = deque.toArray();
+      document.getElementById('size').textContent = deque.size();
+      document.getElementById('front').textContent = deque.peekFront() ?? '—';
+      document.getElementById('rear').textContent = deque.peekRear() ?? '—';
+      document.getElementById('action').textContent = action;
+
+      const lane = document.getElementById('lane');
+      lane.innerHTML = '';
+      if (items.length === 0) {
+        lane.innerHTML = '<span class="empty">Deque is empty. Try adding front/rear values.</span>';
+        return;
+      }
+
+      items.forEach((item, i) => {
+        const n = document.createElement('div');
+        n.className = 'node';
+        if (i === 0) n.classList.add('front');
+        if (i === items.length - 1) n.classList.add('rear');
+        let role = '';
+        if (i === 0) role += 'front';
+        if (i === items.length - 1) role += (role ? ' / ' : '') + 'rear';
+        n.innerHTML = `<small>${role || 'middle'}</small>${item}`;
+        lane.appendChild(n);
+      });
+    }
+
+    function value() { return document.getElementById('value').value.trim(); }
+
+    function addFront() {
+      const v = value(); if (!v) return;
+      deque.addFront(v); log(`addFront(<i>${v}</i>)`); render('Added front');
+    }
+    function addRear() {
+      const v = value(); if (!v) return;
+      deque.addRear(v); log(`addRear(<i>${v}</i>)`); render('Added rear');
+    }
+    function removeFront() {
+      if (deque.size() === 0) { log('removeFront() ignored (empty deque)'); render('Remove ignored'); return; }
+      log(`removeFront() → <i>${deque.removeFront()}</i>`); render('Removed front');
+    }
+    function removeRear() {
+      if (deque.size() === 0) { log('removeRear() ignored (empty deque)'); render('Remove ignored'); return; }
+      log(`removeRear() → <i>${deque.removeRear()}</i>`); render('Removed rear');
+    }
+    function peekBoth() {
+      log(`peekFront() → <i>${deque.peekFront() ?? 'undefined'}</i>; peekRear() → <i>${deque.peekRear() ?? 'undefined'}</i>`);
+      render('Peeked both ends');
+    }
+    function clearDeque() { deque.clear(); log('clear()'); render('Cleared'); }
+    function seedHistory() {
+      deque.clear();
+      ['loiane.com', 'loiane.com/about', 'loiane.com/courses'].forEach((u) => deque.addFront(u));
+      log('Seeded deque with browser-like history');
+      render('Seeded');
+    }
+
+    render();
+  </script>
+</body>
+</html>
