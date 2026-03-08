@@ -1,0 +1,9 @@
+{
+  "name": "week9-queue-deque-project",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Code extracted from week9/5 Queues and Deques.pdf",
+  "scripts": {
+    "start": "node src/examples.js"
+  }
+}
