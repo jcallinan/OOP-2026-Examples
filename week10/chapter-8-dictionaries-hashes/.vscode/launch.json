@@ -1,0 +1,11 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Run dictionary and hash examples",
+      "program": "${workspaceFolder}/src/examples.js"
+    }
+  ]
+}
