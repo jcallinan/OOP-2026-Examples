@@ -1,0 +1,15 @@
+{
+  "name": "week10-chapter-7-sets",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Code extracted and organized from week10/7 Sets.docx",
+  "scripts": {
+    "start": "node src/examples.js",
+    "example:all": "node src/examples.js",
+    "example:using-myset": "node src/examples/using-myset-class.js",
+    "example:union": "node src/examples/union-example.js",
+    "example:intersection": "node src/examples/intersection-example.js",
+    "example:difference": "node src/examples/difference-example.js",
+    "example:subset": "node src/examples/subset-example.js"
+  }
+}

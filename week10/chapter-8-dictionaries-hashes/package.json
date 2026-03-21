@@ -1,0 +1,15 @@
+{
+  "name": "week10-chapter-8-dictionaries-hashes",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Code extracted and organized from week10/8 Dictionaries and Hashes.docx",
+  "scripts": {
+    "start": "node src/examples.js",
+    "example:all": "node src/examples.js",
+    "example:dictionary": "node src/examples/dictionary-example.js",
+    "example:hash-table": "node src/examples/hash-table-example.js",
+    "example:separate-chaining": "node src/examples/separate-chaining-example.js",
+    "example:linear-probing": "node src/examples/linear-probing-example.js",
+    "example:weakmap": "node src/examples/weakmap-example.js"
+  }
+}

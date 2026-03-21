@@ -1,0 +1,15 @@
+{
+  "name": "week10-chapter-6-linked-lists",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Code extracted and organized from week10/6 Linked Lists.docx",
+  "scripts": {
+    "start": "node src/examples.js",
+    "example:all": "node src/examples.js",
+    "example:linked-list": "node src/examples/linked-list-example.js",
+    "example:doubly-linked-list": "node src/examples/doubly-linked-list-example.js",
+    "example:circular-linked-list": "node src/examples/circular-linked-list-example.js",
+    "example:media-player": "node src/examples/media-player-example.js",
+    "example:reverse-list": "node src/examples/reverse-list-example.js"
+  }
+}

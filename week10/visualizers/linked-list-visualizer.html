@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Linked List Visualizer</title>
+  <style>
+    body{font-family:system-ui,sans-serif;background:linear-gradient(135deg,#fff8f1,#ffe1e1);color:#3d1f2b;padding:24px}
+    .wrap{max-width:1100px;margin:0 auto;display:grid;gap:16px}.panel{background:#fff;border:2px solid #ffc2d1;border-radius:18px;padding:18px;box-shadow:0 16px 30px rgba(153,43,79,.12)}
+    .hero{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(90deg,#ff8fab,#fb6f92);color:#fff}.controls{display:flex;flex-wrap:wrap;gap:8px}.node-row{display:flex;align-items:center;gap:10px;overflow:auto;padding:12px;min-height:96px;background:#fff5f7;border-radius:14px;border:1px dashed #fb6f92}
+    input,button{padding:10px 12px;border-radius:10px;border:1px solid #f4a9bc} button{background:#fb6f92;color:#fff;font-weight:700;cursor:pointer}.ghost{background:#fff;color:#fb6f92}
+    .node{min-width:92px;text-align:center;background:#fff;border:2px solid #ff8fab;border-radius:14px;padding:10px}.tag{font-size:11px;color:#9d4b64;text-transform:uppercase}.arrow{font-size:24px;color:#fb6f92}.note{color:#7a4b59;line-height:1.7}.log{font-family:ui-monospace,monospace;font-size:12px;max-height:280px;overflow:auto}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="panel hero"><div><h1>🔗 Linked List Visualizer</h1><p>Week 10 • head pointers, traversal, and pointer rewiring</p></div><div id="sizeBox">size: 0</div></div>
+  <div class="panel"><div class="controls"><input id="value" value="Node-A" placeholder="node value"><button onclick="appendNode()">Append</button><button onclick="prependNode()">Prepend</button><button onclick="removeHead()">Remove Head</button><button class="ghost" onclick="seed()">Seed Example</button><button class="ghost" onclick="clearAll()">Clear</button></div><div class="node-row" id="nodes"></div></div>
+  <div class="panel"><p class="note">This visualizer highlights the textbook idea that a linked list is built from <b>nodes</b> and <b>references</b>. Adding at the head is cheap because the new node can immediately point to the old head. Appending is slower because we must <b>traverse</b> to the tail first.</p><div class="log" id="log"></div></div>
+</div>
+<script>
+const list=[];
+function log(msg){document.getElementById('log').innerHTML=`<div>${new Date().toLocaleTimeString()} — ${msg}</div>`+document.getElementById('log').innerHTML}
+function render(){document.getElementById('sizeBox').textContent=`size: ${list.length}`;const nodes=document.getElementById('nodes');nodes.innerHTML=''; if(!list.length){nodes.innerHTML='<i>The list is empty. Add a node to create the head.</i>';return;} list.forEach((item,index)=>{const div=document.createElement('div');div.className='node';div.innerHTML=`<div class="tag">${index===0?'head':'node '+index}</div><div>${item}</div>`;nodes.appendChild(div); if(index<list.length-1){const arrow=document.createElement('div');arrow.className='arrow';arrow.textContent='→';nodes.appendChild(arrow);}})}
+function appendNode(){const v=value.value.trim();if(!v)return;list.push(v);log(`append(${v}) traverses to the current tail before linking the new node.`);value.value='';render()}
+function prependNode(){const v=value.value.trim();if(!v)return;list.unshift(v);log(`prepend(${v}) makes the new node the head and points it at the old head.`);value.value='';render()}
+function removeHead(){if(!list.length)return;const removed=list.shift();log(`removeHead() moved head to the next node and removed ${removed}.`);render()}
+function seed(){list.splice(0,list.length,...['Big O','Arrays','Linked Lists','Trees']);log('Loaded a textbook-flavored traversal example.');render()}
+function clearAll(){list.length=0;log('Cleared the list.');render()}
+render();
+</script>
+</body>
+</html>
