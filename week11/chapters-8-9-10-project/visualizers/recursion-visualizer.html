@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Recursion Visualizer</title>
+<style>body{font-family:system-ui;background:linear-gradient(135deg,#edf7ff,#d9ebff);padding:24px;color:#123}.card{max-width:900px;margin:auto;background:#fff;padding:20px;border-radius:16px;border:2px solid #a5c9ff}.controls{display:flex;gap:8px;flex-wrap:wrap}input,button{padding:10px;border-radius:10px;border:1px solid #99b}button{background:#2c6ecb;color:#fff;font-weight:700}pre{background:#0d1b2a;color:#e6f2ff;padding:12px;border-radius:12px;overflow:auto}</style></head>
+<body><div class="card"><h1>🔁 Recursion Visualizer (Factorial)</h1><div class="controls"><input id="n" type="number" value="5" min="0" max="12"/><button onclick="run()">Trace Recursion</button></div><pre id="log"></pre></div>
+<script>
+function factorialTrace(n,depth=0,steps=[]){steps.push(`${' '.repeat(depth*2)}call factorial(${n})`); if(n<=1){steps.push(`${' '.repeat(depth*2)}return 1`); return {value:1,steps};} const result=factorialTrace(n-1,depth+1,steps).value*n; steps.push(`${' '.repeat(depth*2)}return ${result}`); return {value:result,steps};}
+function run(){const value=Number(document.getElementById('n').value);const {value:result,steps}=factorialTrace(value);document.getElementById('log').textContent=steps.join('\n')+`\n\nResult: ${result}`;}
+run();
+</script></body></html>

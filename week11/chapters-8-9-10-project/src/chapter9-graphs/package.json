@@ -1,0 +1,8 @@
+{
+  "name": "week11-graphs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "run": "node examples.js"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "week11-sorting-searching",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "run": "node examples.js"
+  }
+}
