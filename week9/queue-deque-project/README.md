@@ -14,6 +14,12 @@ Included snippets:
 - `isPalindrome` checker
 - TypeScript `countStudents` solution snippet
 
+## Setup
+
+```bash
+npm install
+```
+
 ## Run examples
 
 ```bash
