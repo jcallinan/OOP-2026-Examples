@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Binary Map Visualizer</title>
+<style>body{font-family:system-ui;background:linear-gradient(135deg,#fff5f2,#ffe5dc);padding:24px;color:#321}.card{max-width:960px;margin:auto;background:#fff;padding:18px;border:2px solid #ffc3ad;border-radius:16px}.controls{display:flex;gap:8px;flex-wrap:wrap}input,button{padding:10px;border-radius:10px;border:1px solid #b99}button{background:#d95f02;color:#fff;font-weight:700}.row{padding:8px;border-bottom:1px dashed #ddd}</style></head>
+<body><div class="card"><h1>🗺️ Binary Map Visualizer</h1><p>Shows key-value entries stored and searched using binary search on sorted keys.</p><div class="controls"><input id="k" value="8" placeholder="key"><input id="v" value="Node 8" placeholder="value"><button onclick="addPair()">Add Pair</button><input id="target" value="8" placeholder="search key"><button onclick="searchKey()">Binary Search Key</button></div><div id="mapView"></div><div id="result"></div></div>
+<script>
+const entries=[];
+function render(){const view=document.getElementById('mapView');const sorted=[...entries].sort((a,b)=>a.key-b.key);view.innerHTML=sorted.map((e,i)=>`<div class='row'>${i}: key=${e.key}, value=${e.value}</div>`).join('')||'<i>No entries.</i>';}
+function addPair(){const key=Number(document.getElementById('k').value);const value=document.getElementById('v').value;const existing=entries.find(e=>e.key===key);if(existing)existing.value=value;else entries.push({key,value});render();}
+function searchKey(){const target=Number(document.getElementById('target').value);const sorted=[...entries].sort((a,b)=>a.key-b.key);let low=0,high=sorted.length-1,steps=[];while(low<=high){const mid=Math.floor((low+high)/2);steps.push(`low=${low}, high=${high}, mid=${mid}, key=${sorted[mid].key}`);if(sorted[mid].key===target){document.getElementById('result').innerHTML=`<b>Found:</b> ${sorted[mid].value}<br><pre>${steps.join('\n')}</pre>`;return;} if(sorted[mid].key<target)low=mid+1;else high=mid-1;} document.getElementById('result').innerHTML=`<b>Not found</b><br><pre>${steps.join('\n')}</pre>`;}
+render();
+</script></body></html>

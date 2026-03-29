@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Map Sort Visualizer</title>
+<style>body{font-family:system-ui;background:linear-gradient(135deg,#f5f2ff,#e8dcff);padding:24px;color:#213}.card{max-width:960px;margin:auto;background:#fff;padding:18px;border:2px solid #cab6ff;border-radius:16px}.controls{display:flex;gap:8px;flex-wrap:wrap}input,button,select{padding:10px;border-radius:10px;border:1px solid #a9a}button{background:#5e548e;color:#fff;font-weight:700}.item{padding:8px;border-bottom:1px dashed #ddd}</style></head>
+<body><div class="card"><h1>📊 Map Sort Visualizer</h1><p>Sort map entries by key or value (ascending/descending).</p><div class="controls"><input id="key" value="B"><input id="value" value="32" type="number"><button onclick="add()">Add/Update</button><select id="by"><option value="key">Sort by Key</option><option value="value">Sort by Value</option></select><select id="order"><option value="asc">Ascending</option><option value="desc">Descending</option></select><button onclick="render()">Sort</button><button onclick="seed()">Seed Data</button></div><div id="list"></div></div>
+<script>
+const map=new Map();
+function add(){map.set(document.getElementById('key').value,Number(document.getElementById('value').value));render();}
+function seed(){[['A',20],['C',12],['B',32],['D',5]].forEach(([k,v])=>map.set(k,v));render();}
+function render(){const by=document.getElementById('by').value;const order=document.getElementById('order').value;const mult=order==='asc'?1:-1;const data=[...map.entries()].sort((a,b)=>{const av=by==='key'?a[0]:a[1];const bv=by==='key'?b[0]:b[1];if(av<bv)return -1*mult;if(av>bv)return 1*mult;return 0;});document.getElementById('list').innerHTML=data.map(([k,v],i)=>`<div class='item'>${i+1}. ${k} → ${v}</div>`).join('')||'<i>No entries.</i>';}
+render();
+</script></body></html>

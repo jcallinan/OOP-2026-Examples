@@ -1,0 +1,8 @@
+{
+  "name": "week11-trees",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "run": "node examples.js"
+  }
+}

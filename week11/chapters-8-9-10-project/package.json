@@ -1,0 +1,13 @@
+{
+  "name": "week11-chapters-8-9-10-project",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Week 11 code extraction project for Trees, Graphs, and Sorting/Searching.",
+  "scripts": {
+    "trees": "node src/chapter8-trees/examples.js",
+    "graphs": "node src/chapter9-graphs/examples.js",
+    "sorting-searching": "node src/chapter10-sorting-searching/examples.js",
+    "all": "npm run trees && npm run graphs && npm run sorting-searching"
+  }
+}

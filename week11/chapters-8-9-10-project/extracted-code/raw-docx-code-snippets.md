@@ -1,0 +1,469 @@
+# Raw .docx code-like snippets
+
+- `The binary and binary search trees`
+- `A node in a binary tree has two children at most: one left child and one right child. This definition allows us to write more efficient algorithms to insert, search, and delete nodes to/from a tree. Binary trees are largely used in computer science.`
+- `A binary search tree is a binary tree, but it only allows you to store nodes with lesser values on the left-hand side and nodes with greater values on the right-hand side. The diagram in the previous topic exemplifies a binary search tree.`
+- `Creating the BinarySearchTree class`
+- `Let's start by creating our BinarySearchTree class. First, let's declare its skeleton via the following code: function BinarySearchTree() {`
+- `var Node = function(key){ //{1}`
+- `this.key = key;     this.left = null;     this.right = null;   };`
+- `var root = null; //{2} }`
+- `Just as in linked lists, we will work with pointers again to represent the connection between the nodes (called edges in tree terminology). When we worked with double linked lists, each node had two pointers: one to indicate the next node and another one to indicate the previous node. Working with trees, we will use the same approach (we will also work with two pointers). However, one pointer will point to the left child, and the other one will point to the right child. For this reason, we will declare a Node class that will represent each node of the tree (line {1}). A small detail that is worth noting is that instead of calling the node itself as a node or item, as we did in the previous chapters, we will call it a key. A key is how a tree node is known in tree terminology.`
+- `We will follow the same pattern we used in the LinkedList class (from Chapter 5, Linked Lists). This means that we will also declare a variable so that we can control the first node of the data structure. In the case of a tree, instead of the head, we have the root (line {2}).`
+- `insert(key): This inserts a new key in the tree search(key): This searches for the key in the tree and returns true if it exists and false if the node does not exist inOrderTraverse: This visits all nodes of the tree using in-order traverse preOrderTraverse: This visits all nodes of the tree using pre-order traverse postOrderTraverse: This visits all the nodes of the tree using post-order traverse min: This returns the minimum value/key in the tree max: This returns the maximum value/key in the tree remove(key): This removes the key from the tree`
+- `The following code is the first piece of the algorithm used to insert a new key in a tree:`
+- `this.insert = function(key){   var newNode = new Node(key); //{1}`
+- `if (root === null){ //{2}     root = newNode;`
+- `} else {`
+- `insertNode(root,newNode); //{3}`
+- `To insert a new node (or item) into a tree, there are three steps we need to follow.`
+- `The first step is to create the instance of the Node class that will represent the new node (line {1}). Because of its constructor properties, we only need to pass the value we want to add to the tree, and its left and right pointers will have a null value automatically.`
+- `Second, we need to verify that the insertion is a special case. A special case would be if the node we are trying to add is the first one in the tree (line {2}). If it is, all we have to do is point the root to this new node.`
+- `The third step is to add a node to a different position than the root. In this case, we will need a helper (line {3}) private function to help us to do this, which is declared as follows:`
+- `var insertNode = function(node, newNode){   if (newNode.key < node.key){ //{4}     if (node.left === null){   //{5}       node.left = newNode;   //{6}`
+- `} else {`
+- `insertNode(node.left, newNode); //{7}`
+- `} else {`
+- `if (node.right === null){  //{8}       node.right = newNode;  //{9}`
+- `} else {`
+- `insertNode(node.right, newNode); //{10}`
+- `The insertNode function will help us find out where the correct place to insert a new node is. The following list describes what this function does:`
+- `If the tree is not empty, we need to find a place to add a new node. For this reason, we will call the insertNode function by passing the root and the node as parameters (line {3}).`
+- `{4})), then we need to check the left child of the node. If there is no left node (line {5}), then we will insert the new node there (line {6}). If not, we need to descend a level in the tree by calling insertNode recursively (line {7}). In this case, the node we will compare next time will be the left child of the current node.`
+- `If the node's key is greater than the current node key and there is no right child (line {8}), then we will insert the new node there (line {9}). If not, we will also need to call the insertNode function recursively, but the new node to be compared will be the right child (line {10}).`
+- `Consider the following scenario: we have a new tree, and we are trying to insert its first key. In this case, we will run the following code:`
+- `var tree = new BinarySearchTree(); tree.insert(11);`
+- `The code to create the tree seen in the preceding diagram is a continuation of the previous code (in which we inserted the 11 key), as follows:`
+- `tree.insert(7); tree.insert(15); tree.insert(5); tree.insert(3); tree.insert(9); tree.insert(8); tree.insert(10); tree.insert(13); tree.insert(12); tree.insert(14); tree.insert(20); tree.insert(18); tree.insert(25);`
+- `Also, we would like to insert a new key with the value 6, so we will execute the following code:`
+- `tree.insert(6);`
+- `The tree is not empty, so the code from line {3} will be executed. The code will call the insertNode method (root, key[6]).`
+- `The algorithm will check line {4} (key[6] < root[11] is true), then it will check line {5} (node.left[7] is not null), and finally, it will go to line {7} by calling insertNode (node.left[7], key[6]).`
+- `We will go inside the insertNode method again, but with different parameters. It will check line {4} again (key[6] < node[7] is true), then it will check line {5} (node.left[5] is not null), and finally, it will go to line {7} by calling insertNode (node.left[5], key[6]).`
+- `We will go once more inside the insertNode method. It will check line {4} again (key[6] < node[5] is false), then it will go to line {8} (node.right is null—node 5 does not have any right child descendents), and finally, it will execute line {9} by inserting key 6 as the right child of node 5.`
+- `This will be the result after key 6 is inserted in the tree:`
+- `An in-order traversal visits all the nodes of a BST in an ascending order, meaning it will visit the nodes from the smallest to the largest. An application of in-order traversal would be to sort a tree. Let's check out its implementation:`
+- `this.inOrderTraverse = function(callback){   inOrderTraverseNode(root, callback); //{1} };`
+- `The inOrderTraverse method receives a callback function as a parameter. This function can be used to perform the action we want to execute when the node is visited (this is known as the visitor pattern; for more information on this, refer to`
+- `http://en.wikipedia.org/wiki/Visitor_pattern). As most algorithms we are implementing for the BST are recursive, we will use a private helper function that will receive node and the callback function to help us with it (line {1}). Execute the following code:`
+- `var inOrderTraverseNode = function (node, callback) {`
+- `if (node !== null) { //{2}`
+- `Next, we will visit the left node (line {3}) by calling the same function recursively. Then, we will visit the root node (line {4}) by performing an action with it (callback), and then we will visit the right node (line {5}).`
+- `function printNode(value){ //{6}`
+- `console.log(value);`
+- `However, first, we need to create a callback function (line {6}). All we will do is print the node's value on the browser's console. Then, we can call the inOrderTraverse method by passing our callback function as a parameter (line {7}). When we execute this code, the following will be the output in the console (each number will be output on a different line):`
+- `this.preOrderTraverse = function(callback){     preOrderTraverseNode(root, callback); };`
+- `var preOrderTraverseNode = function (node, callback) {`
+- `if (node !== null) {     callback(node.key); //{1}`
+- `this.postOrderTraverse = function(callback){   postOrderTraverseNode(root, callback); };`
+- `var postOrderTraverseNode = function (node, callback) {`
+- `if (node !== null) {`
+- `There are three types of searches that are usually performed in trees:`
+- `this.min = function() {   return minNode(root); //{1} };`
+- `var minNode = function (node) {`
+- `if (node){`
+- `while (node && node.left !== null) { //{2}       node = node.left;                //{3}     }`
+- `return node.key;`
+- `return null;  //{4}`
+- `this.max = function() {   return maxNode(root); };`
+- `var maxNode = function (node) {`
+- `if (node){`
+- `while (node && node.right !== null) { //{5}`
+- `return node.key;`
+- `return null; };`
+- `In previous chapters, we also implemented the find, search, and get methods to find a specific value in the data structure (which is similar to the has method we implemented in previous chapters). We will implement the search method for the BST as well. Let's take a look at its implementation:`
+- `this.search = function(key){   return searchNode(root, key); //{1} }; var searchNode = function(node, key){   if (node === null){ //{2}`
+- `return false;`
+- `if (key < node.key){ //{3}`
+- `return searchNode(node.left, key); //{4}`
+- `} else if (key > node.key){ //{5}     return searchNode(node.right, key); //{6}`
+- `} else {`
+- `return true; //{7}`
+- `The first thing we need to do is declare the search method. Following the pattern of other methods declared for BST, we will use a helper function to help us (line {1}).`
+- `The searchNode method can be used to find a specific key in the tree or any of its subtrees. This is the reason we will call this method in line {1} by passing the root tree as a parameter.`
+- `Before we start the algorithm, we will validate that the node passed as a parameter is valid (is not null). If it is, it means that the key was not found, and we will return false.`
+- `If the node is not null, we need to continue the verification. If the key we are looking for is lower than the current node (line {3}), then we will continue the search using the left child subtree (line {4}). If the value we are looking for is greater than the current node (line {5}), then we will continue the search from the right child of the current node (line {6}). Otherwise, it means that the key we are looking for is equal to the current node's key, and we will return true to indicate that we found the key (line {7}).`
+- `console.log(tree.search(1) ? 'Key 1 found.' : 'Key 1 not found.'); console.log(tree.search(8) ? 'Key 8 found.' : 'Key 8 not found.');`
+- `We called the searchNode method, passing the root as a parameter (line {1}). The node[root[11]] is not null (line {2}), so we will go to line {3}.`
+- `The key[1] < node[11] is true (line {3}), so we will go to line {4} and call the searchNode method again, passing node[7], key[1] as a parameters.`
+- `The key[1] < node[7] is true (line {3}), so we will go to line {4} and call the searchNode method again, passing node[5], key[1] as a parameters.`
+- `The key[1] < node[5] is true (line {3}), so we will go to line {4} and call the searchNode method again, passing node[3], key[1] as a parameters.`
+- `The key[1] < node[3] is true (line {3}), so we will go to line {4} and call the searchNode method again, passing null, key[1] as a parameters. The null was passed as a parameter because node[3] is a leaf (it does not have children, so the left child will have the value null).`
+- `The node is null (in line {2}, the node to search in this case is null), so we will return false.`
+- `Let's do the same exercise to search value 8, as follows:`
+- `We called the searchNode method, passing root as a parameter (line {1}). The node[root[11]] is not null (line {2}), so we will go to line {3}.`
+- `The key[8] < node[11] is true (line {3}), so we will go to line {4} and call the searchNode method again, passing node[7], key[8] as a parameters.`
+- `The key[8] > node[7] is true (line {5}), so we will go to line {6} and call the searchNode method again, passing node[9], key[8] as a parameters.`
+- `The key[8] < node[9] is true (line {3}), so we will go to line {4} and call the searchNode method again, passing node[8], key[8] as a parameters.`
+- `The key[8] > node[8] is false (line {5}), so we will go to line {7} and return true because node[8] is the key we were looking for.`
+- `The next and final method we will implement for our BST is the remove method. This is the most complex method we will implement in this book. Let's start with the method that will be available to be called from a tree instance, as follows: this.remove = function(key){ root = removeNode(root, key); //{1} };`
+- `This method receives the desired key to be removed, and it also calls removeNode, passing root and key to be removed as parameters (line {1}). One very important thing to note is that the root receives the return of the method removeNode. We will understand why in a second.`
+- `var removeNode = function(node, key){`
+- `if (node === null){ //{2}`
+- `return null;`
+- `if (key < node.key){ //{3}`
+- `node.left = removeNode(node.left, key); //{4}     return node; //{5}`
+- `} else if (key > node.key){ //{6}`
+- `node.right = removeNode(node.right, key); //{7}     return node; //{8}   } else { // key is equal to node.key`
+- `if (node.left === null && node.right === null){ //{9}`
+- `node = null; //{10}       return node; //{11}     }`
+- `//case 2 - a node with only 1 child     if (node.left === null){ //{12}       node = node.right; //{13}       return node; //{14}`
+- `} else if (node.right === null){ //{15}`
+- `node = node.left; //{16}       return node; //{17}`
+- `//case 3 - a node with 2 children     var aux = findMinNode(node.right); //{18}`
+- `return node; //{21}`
+- `As a stop point we have line {2}. If the node we are analyzing is null, it means the key does not exist in the tree, and for this reason, we will return null.`
+- `If we find the key we are looking for (key is equal to node.key), then we will have three different scenarios to handle.`
+- `The findMinNode function is presented as follows:`
+- `var findMinNode = function(node){   while (node && node.left !== null) {`
+- `return node; };`
+- `As the node already has the value null, the parent pointer to the node will receive this value as well. And this is the reason we are returning the node value as the return function. The parent node will always receive the value returned from the function. An alternative to this approach could be passing the parent and the node as a parameter of the method.`
+- `If the node does not have a left child (line {12}), it means it has a right child. So, we will change the reference of the node to its right child (line {13}) and return the updated node (line {14}). We will do the same if the node does not have the right child (line {15}); we will update the node reference to its left child (line {16}) and return the updated value (line {17}).`
+- `Finally, we will return the updated node reference to its parent (line {21}).`
+- `This can cause performance issues when adding, removing, and searching for a node on a particular edge of the tree. For this reason, there is a tree called the Adelson-Velskii and Landi's tree (AVL tree). The AVL tree is a self-balancing BST tree, which means the height of both the left and right subtrees of any node differs by 1 at most. You will learn more about the AVL tree in the next topic.`
+- `The following code inserts a new node in an ALV tree:`
+- `var insertNode = function(node, element) {`
+- `if (node === null) {     node = new Node(element);`
+- `} else if (element < node.key) {     node.left = insertNode(node.left, element);`
+- `if (node.left !== null) {`
+- `} else if (element > node.key) {`
+- `node.right = insertNode(node.right, element);`
+- `if (node.right !== null) {`
+- `return node; };`
+- `However, whenever we insert a new node, we need to check whether the tree needs to be balanced (lines {1} and {2}).`
+- `var heightNode = function(node) {`
+- `if (node === null) {     return -1;`
+- `} else {`
+- `return Math.max(heightNode(node.left),`
+- `So, if we are inserting a new node in a left-hand side subtree, we will calculate the height, and if it is larger than 1 (meaning it is not -1, 0 or 1), then we will balance the left-hand side subtree, as follows:`
+- `//this code replaces line {1} from insertNode method if ((heightNode(node.left) - heightNode(node.right)) > 1){`
+- `// do rotations {3}`
+- `We will apply the same logic if we are inserting a node in a right-hand side subtree via the following code:`
+- `//this code replaces line {2} from insertNode method if ((heightNode(node.right) - heightNode(node.left)) > 1){`
+- `// do rotations {4}`
+- `AVL rotations`
+- `When inserting nodes to an AVL tree, there are two balancing processes that can be used: simple rotation or double rotation. Between simple rotation and double rotation, there are four scenarios:`
+- `Right-Right (RR): This is a single rotation to the left`
+- `Left-Left (LL): This is a single rotation to the right`
+- `Left-Right (LR): This is a double rotation to the right Right-Left (RL): This is a double rotation to the left`
+- `Right-Right (RR): A single rotation to the left Consider the following diagram:`
+- `Suppose node 90 was the last one inserted in the AVL tree. This would make the tree unbalanced (node 50 –Y  has height -2), so we would need to balance it. These are the steps we will perform to balance the tree:`
+- `var rotationRR = function(node) {   var tmp = node.right;  //{1}   node.right = tmp.left; //{2}   tmp.left = node;       //{3}`
+- `return tmp; };`
+- `Left-Left (LL): a single rotation to the right Consider the following diagram:`
+- `Suppose node 5 was the last one inserted in the AVL tree. This would make the tree unbalanced (node 50 –Y has height +2), so we would need to balance it. These are the steps we will perform to balance the tree:`
+- `var rotationLL = function(node) {   var tmp = node.left;   //{1}   node.left = tmp.right; //{2}   tmp.right = node;      //{3}`
+- `return tmp;`
+- `Left-Right (LR): a double rotation to the right Consider the following diagram:`
+- `Suppose node 35 was the last one inserted in the AVL tree. This would make the tree unbalanced (node 50 –Y has height +2), so we would need to balance it. These are the steps we will perform to balance the tree:`
+- `So basically, we are doing an RR rotation first and then an LL rotation.`
+- `var rotationLR = function(node) {   node.left = rotationRR(node.left);`
+- `return rotationLL(node); };`
+- `Right-Left (RL): a double rotation to the left`
+- `Suppose node 75 was the last one inserted in the AVL tree. This would make the tree unbalanced (node 70 –Y has height -2), so we would need to balance it. These are the steps we will perform to balance the tree:`
+- `So basically, we are doing an LL rotation first and then an RR rotation.`
+- `var rotationRL = function(node) {   node.right = rotationLL(node.right);`
+- `return rotationRR(node); };`
+- `Completing the insertNode method`
+- `After verifying that the tree needs to be balanced, we just need to apply the correct rotation for each case.`
+- `If we are inserting a node in the left-hand side subtree and the value of the node is smaller than the value of its left-hand side child, we will do an LL rotation. Otherwise, we will do an LR rotation. The code that exemplifies this process is given here:`
+- `//this code replaces line {1} from insertNode method if ((heightNode(node.left) - heightNode(node.right)) > 1){   // do rotations {3}   if (element < node.left.key){     node = rotationLL(node);`
+- `} else {`
+- `node = rotationLR(node);`
+- `If we are inserting a node in the right-hand side subtree and the value of the node is bigger than the value of its right-hand side child, we will do an RR rotation. Otherwise, we will do an RL rotation. The code that exemplifies this process is given as follows:`
+- `//this code replaces line {2} from insertNode method if ((heightNode(node.right) - heightNode(node.left)) > 1){`
+- `// do rotations {4}   if (element > node.right.key){     node = rotationRR(node);`
+- `} else {`
+- `node = rotationRL(node);`
+- `Although the AVL tree is a self-balanced tree, sometimes its performance in inserting or removing nodes is not the best one. A better option would be using the Red-Black tree.`
+- `In this chapter, we covered the algorithms to add, search, and remove items from a binary search tree, which is the basic tree data structure largely used in computer science. We covered three traversal approaches to visit all the nodes of a tree. You also learned how to develop a self-balanced tree named the AVL tree.`
+- `Graphs9`
+- `In this chapter, you will learn about another nonlinear data structure called graph. This will be the last data structure we will cover before diving into sorting and searching algorithms.`
+- `Graph terminology`
+- `Graphs can be undirected (where edges do not have a direction) or directed (digraph), where edges have a direction, as demonstrated here:`
+- `Graphs can also be unweighted (as we have noted so far) or weighted (in which the edges have weights), as shown in the following diagram:`
+- `We can solve many problems in the computer science world using graphs, such as searching a graph for a specific vertex or searching for a specific edge, finding a path in the graph (from one vertex to another), finding the shortest path between two vertices, and cycle detection.`
+- `Graphs that are not strongly connected (sparse graphs) will be represented by a matrix with many zero entries in the adjacency matrix. This means we would waste space in the computer memory to represent edges that do not exist; for example, if we need to find the adjacent vertices of a given vertex, we will have to iterate through the whole row even if this vertex has only one adjacent vertex. Another reason this might not be a good representation is that the number of vertices in the graph may change, and a twodimensional array is inflexible.`
+- `Creating the Graph class`
+- `function Graph() {   var vertices = []; //{1}`
+- `var adjList = new Dictionary(); //{2} }`
+- `We will use an array to store the names of all the vertices of the graph (line {1}), and we will use a dictionary (implemented in Chapter 7, Dictionaries and Hashes) to store the adjacent list (line {2}). The dictionary will use the name of the vertex as a key and the list of adjacent vertices as a value. Both the vertices array and the adjList dictionary are private attributes of our Graph class.`
+- `this.addVertex = function(v){   vertices.push(v); //{3}   adjList.set(v, []); //{4} };`
+- `this.addEdge = function(v, w){   adjList.get(v).push(w); //{5}   adjList.get(w).push(v); //{6} };`
+- `var graph = new Graph();`
+- `var myVertices = ['A','B','C','D','E','F','G','H','I']; //{7}`
+- `for (var i=0; i<myVertices.length; i++){ //{8}`
+- `To make our lives even easier, let's also implement the toString method for this Graph class so that we can output the graph on the console:`
+- `this.toString = function(){`
+- `var s = '';`
+- `for (var i=0; i<vertices.length; i++){ //{10}`
+- `var neighbors = adjList.get(vertices[i]); //{11}     for (var j=0; j<neighbors.length; j++){ //{12}`
+- `}   return s; };`
+- `console.log(graph.toString());`
+- `Graph traversals`
+- `Similar to the tree data structure, we can also visit all the nodes of a graph. There are two algorithms that can be used to traverse a graph, called breadth-first search (BFS) and depth-first search (DFS). Traversing a graph can be used to find a specific vertex or a path between two vertices, to check whether the graph is connected, to check whether it contains cycles, and so on.`
+- `Breadth-first search (BFS)`
+- `var initializeColor = function(){`
+- `var color = [];`
+- `for (var i=0; i<vertices.length; i++){     color[vertices[i]] = 'white'; //{1}`
+- `}   return color; }; this.bfs = function(v, callback){`
+- `var color = initializeColor(), //{2}   queue = new Queue();       //{3}   queue.enqueue(v);              //{4}`
+- `while (!queue.isEmpty()){      //{5}     var u = queue.dequeue(),        //{6}     neighbors = adjList.get(u); //{7}     color[u] = 'grey';                      //{8}     for (var i=0; i<neighbors.length; i++){ //{9}       var w = neighbors[i];               //{10}       if (color[w] === 'white'){          //{11}         color[w] = 'grey';              //{12}         queue.enqueue(w);               //{13}`
+- `color[u] = 'black'; //{14}     if (callback) {     //{15}       callback(u);`
+- `For both BFS and DFS, we need to mark the vertices visited. To do so, we will use a helper array called color. As and when we start executing the BFS or DFS algorithms, all the vertices have the color white (line {1}), so we can create a helper function called initializeColor, which will do this for us for both the algorithms that we are implementing.`
+- `Let's dive into the BFS method implementation. The first thing we will do is use the initializeColor function to initialize the color array with the white color (line {2}). We also need to declare and create a Queue instance (line {3}) that will store the vertices that need to be visited and explored.`
+- `The bfs method we are implementing also receives a callback (we used a similar approach in Chapter 8, Trees, for tree traversals). This parameter is optional, and if we pass any callback function (line {15}), we will use it.`
+- `function printNode(value){ //{16}`
+- `console.log('Visited vertex: ' + value); //{17}`
+- `First, we declared a callback function (line {16}) that will simply output in the browser's console or the name (line {17}) of the vertex that was completely explored by the algorithm. Then, we called the bfs method, passing the first vertex (A from the myVertices array that we declared at the beginning of this chapter) and the callback function. When we execute this code, the algorithm will output the following result in the browser's console:`
+- `Given a vertex v, the BFS algorithm visits all the vertices with distance 1, then distance 2, and so on. So, we can use the BFS algorithm to solve this problem. We can modify the bfs method to return some information for us:`
+- `this.BFS = function(v){`
+- `var color = initializeColor(),`
+- `for (var i=0; i<vertices.length; i++){ //{3}     d[vertices[i]] = 0;                //{4}     pred[vertices[i]] = null;          //{5}   }`
+- `while (!queue.isEmpty()){     var u = queue.dequeue(),     neighbors = adjList.get(u);     color[u] = 'grey';`
+- `for (i=0; i<neighbors.length; i++){`
+- `var w = neighbors[i];       if (color[w] === 'white'){         color[w] = 'grey';`
+- `}   return { //{8}   distances: d,   predecessors: pred`
+- `At the end of the method, we can return an object with d and pred (line {8}).`
+- `Now, we can execute the BFS method again and store its return value in a variable, as follows:`
+- `var shortestPathA = graph.BFS(myVertices[0]); console.log(shortestPathA);`
+- `var fromVertex = myVertices[0]; //{9} for (var i=1; i<myVertices.length; i++){ //{10}   var toVertex = myVertices[i], //{11}   path = new Stack();       //{12}   for (var v=toVertex; v!== fromVertex;   v=shortestPathA.predecessors[v]) { //{13}     path.push(v);                          //{14}`
+- `path.push(fromVertex);       //{15}   var s = path.pop();          //{16}   while (!path.isEmpty()){     //{17}     s += ' - ' + path.pop(); //{18}`
+- `console.log(s); //{19} }`
+- `There is Dijkstra's algorithm, which solves the single-source shortest path problem, for example. The Bellman-Ford algorithm solves the single-source problem if edge weights are negative. The A* search algorithm provides the shortest path for a single pair of vertices using heuristics to try to speed up the search. The Floyd-Warshall algorithm provides the shortest path for all pairs of vertices.`
+- `Depth-first search (DFS)`
+- `this.dfs = function(callback){   var color = initializeColor(); //{1}`
+- `for (var i=0; i<vertices.length; i++){ //{2}     if (color[vertices[i]] === 'white'){ //{3}       dfsVisit(vertices[i], color, callback); //{4}`
+- `var dfsVisit = function(u, color, callback){`
+- `color[u] = 'grey'; //{5}   if (callback) {    //{6}     callback(u);`
+- `var neighbors = adjList.get(u);         //{7}   for (var i=0; i<neighbors.length; i++){ //{8}     var w = neighbors[i];               //{9}     if (color[w] === 'white'){          //{10}       dfsVisit(w, color, callback);   //{11}`
+- `The first thing we need to do is create and initialize the color array (line {1}) with the value white for each vertex of the graph. We did the same thing for the BFS algorithm. Then, for each nonvisited vertex (lines {2} and {3}) of the Graph instance, we will call the recursive private function dfsVisit, passing the vertex, the color array, and the callback function (line {4}).`
+- `Whenever we visit the u vertex, we will mark it as discovered (grey, line {5}). If there is a callback function (line {6}), we will execute it to output the vertex visited. Then, the next step is getting the list of neighbors of the vertex u (line {7}). For each unvisited (the color white, lines {10} and {8}) neighbor w (line {9}) of u, we will call the dfsVisit function, passing w and the other parameters (line {11}, add the vertex w to the stack so it can be visited next). At the end, after the vertex and its adjacent vertices are visited deeply, we will backtrack, meaning the vertex is completely explored and is marked black (line {12}).`
+- `In this graph that we used as an example, line {4} will be executed only once, because all the other vertices have a path to the first one that is called the dfsVisit function (vertex A). If vertex B is the first one to call the function, then line {4} would be executed again for another vertex (for example, vertex A).`
+- `Given a graph G, the DFS algorithm traverses all the vertices of G and constructs a forest (a collection of rooted trees) together with a set of source vertices (roots) and outputs two arrays: the discovery time and finish explorer time. We can modify the dfs method to return some information for us, such as the following:`
+- `var time = 0; //{1} this.DFS = function(){`
+- `var color = initializeColor(), //{2}`
+- `for (var i=0; i<vertices.length; i++){ //{3}`
+- `for (i=0; i<vertices.length; i++){     if (color[vertices[i]] === 'white'){`
+- `return {           //{4}     discovery: d,     finished: f,     predecessors: p`
+- `var DFSVisit = function(u, color, d, f, p){`
+- `console.log('discovered ' + u);`
+- `color[u] = 'grey';   d[u] = ++time;     //{5}   var neighbors = adjList.get(u);   for (var i=0; i<neighbors.length; i++){`
+- `var w = neighbors[i];     if (color[w] === 'white'){`
+- `color[u] = 'black';   f[u] = ++time;      //{7}   console.log('explored ' + u); };`
+- `As we want to track the time of discovery and the time when we finished exploring, we need to declare a variable to do this (line {1}). We cannot pass time as a parameter because variables that are not objects and cannot be passed as a reference to other JavaScript methods (passing a variable as a reference means that if this variable is modified inside the other method, the new values will also be reflected in the original variable). Next, we will declare the d, f, and p arrays, too (line {2}). We also need to initialize these arrays for each vertex of the graph (line {3}). At the end of the method, we will return these values (line {4}) so that we can work with them later.`
+- `Topological sorting using DFS`
+- `When we need to specify the order that some tasks or steps need to be executed in, it is called topological sorting (or topsort or even toposort). This problem is present in different scenarios of our lives. For example, when we start a computer science course, there is an order of disciplines that we can take before taking any other discipline (you cannot take Algorithms II before taking Algorithms I). When we are working in a development project, there are some steps that need to be executed in order; for example, first we need to get the requirements from the client, then develop what is asked for by the client, and then deliver the project. You cannot deliver the project and gather the requirements after.`
+- `Topological sorting can only be applied to DAGs. So, how can we use topological sorting using DFS? Let's execute the DFS algorithm for the diagram presented at the beginning of this topic:`
+- `graph = new Graph();`
+- `myVertices = ['A','B','C','D','E','F']; for (i=0; i<myVertices.length; i++){   graph.addVertex(myVertices[i]);`
+- `graph.addEdge('A', 'C'); graph.addEdge('A', 'D'); graph.addEdge('B', 'D'); graph.addEdge('B', 'E'); graph.addEdge('C', 'F'); graph.addEdge('F', 'E'); var result = graph.DFS();`
+- `Now, all we have to do is sort the finishing time array and the decreasing order of finishing time, and we will have the topological sorting for the graph, as follows:`
+- `Note that the previous toposort result is only one of the possibilities. There might be different results if we modify the algorithm a little bit. For example, the following result is one of many other possibilities:`
+- `var graph = [[0, 2, 4, 0, 0, 0],              [0, 0, 1, 4, 2, 0],`
+- `this.dijkstra = function(src){   var dist = [], visited = [],   length = this.graph.length;`
+- `for (var i = 0; i < length; i++) { //{1}`
+- `dist[src] = 0; //{2}   for (var i = 0; i < length-1; i++){ //{3}     var u = minDistance(dist, visited); //{4}     visited[u] = true; //{5}`
+- `for (var v = 0; v < length; v++){`
+- `if (!visited[v] &&`
+- `this.graph[u][v]!=0 && dist[u] != INF &&       dist[u]+this.graph[u][v] < dist[v]){ //{6}         dist[v] = dist[u] + this.graph[u][v]; //{7}`
+- `return dist; //{8} };`
+- `Line {8}: After all the vertices are processed, we will return the result containing the shortest path value from the vertex source (src) to all the other vertices of the graph`
+- `To calculate the minDistance between, we will search for the minimum value in the dist array, as follows, and return the array index that contains the minimum value:`
+- `var minDistance = function(dist, visited){   var min = INF, minIndex = -1;`
+- `for (var v = 0; v < dist.length; v++){     if (visited[v] == false && dist[v] <= min){`
+- `return minIndex; };`
+- `<w:p w14:paraId="64088AE3" w14:textId="77777777" w:rsidR="0078312E" w:rsidRDefault="00000000"><w:pPr><w:spacing w:after="160" w:line="259" w:lineRule="auto"/><w:ind w:left="0" w:firstLine="0"/></w:pPr><w:r><w:t>It is also possible to modify the algorithm to return the value of the`
+- `<w:p w14:paraId="64088AE3" w14:textId="77777777" w:rsidR="0078312E" w:rsidRDefault="00000000"><w:pPr><w:spacing w:after="160" w:line="259" w:lineRule="auto"/><w:ind w:left="0" w:firstLine="0"/></w:pPr><w:r><w:t>It is also possible to modify the algorithm to return the value of the`
+- `this.floydWarshall = function(){`
+- `var dist = [], length = this.graph.length, i, j, k;`
+- `for (i = 0; i < length; i++){ //{1}`
+- `for (j = 0; j < length; j++){       dist[i][j] = this.graph[i][j];`
+- `for (k = 0; k < length; k++){     //{2}     for (i = 0; i < length; i++){       for (j = 0; j < length; j++){`
+- `if (dist[i][k] + dist[k][j] < dist[i][j]){ //{3}           dist[i][j] = dist[i][k] + dist[k][j]; //{4}`
+- `return dist; };`
+- `this.prim = function() {`
+- `var parent = [], key = [], visited = [];   length = this.graph.length, i;`
+- `for (i = 0; i < length; i++){ //{1}`
+- `for (i = 0; i < length-1; i++) {  //{3}     var u = minKey(key, visited); //{4}     visited[u] = true;            //{5}`
+- `for (var v = 0; v < length; v++){       if (this.graph[u][v] && visited[v] == false       && this.graph[u][v] <  key[v]){ //{6}       parent[v]  = u;            //{7}       key[v] = this.graph[u][v]; //{8}`
+- `return parent; //{9} };`
+- `Line {4}: To do so, we need to select the minimum key vertex from the set of vertices that was not processed yet (the same function as we used in Dijkstra's algorithm but with a different name)`
+- `Line {9}: After all the vertices are processed, we will return the result containing the MST`
+- `var graph = [[0, 2, 4, 0, 0, 0],              [2, 0, 2, 4, 2, 0],`
+- `this.kruskal = function(){   var length = this.graph.length,`
+- `if (union(u, v, parent)){ //{6}`
+- `return parent;`
+- `The find function is given as follows. It prevents cycles in MST:`
+- `var find = function(i, parent){`
+- `}   return i; };`
+- `The union function is also given here:`
+- `var union = function(i, j, parent){`
+- `if(i != j) {     parent[j] = i;     return true;`
+- `return false; };`
+- `There are a few variations of this algorithm that can be developed. It will depend on the data structure used to sort the weight the edges values (such as Priority Queue) and also how the graph is represented.`
+- `In this chapter, we covered the basic concepts of graphs. You learned the different ways we can represent this data structure, and we implemented an algorithm to represent a graph using an adjacency list. You also learned how to traverse a graph using BFS and DFS approaches. This chapter also covered two applications of BFS and DFS, which find the shortest path using BFS and topological sorting using DFS.`
+- `In the next chapter, you will learn the most common sorting algorithms used in computer science.`
+- `Suppose we have a telephone agenda (or a notebook) that does not have any sorting order. When you need to add a contact with telephone numbers, you simply write it down in the next available slot. Suppose you also have a high number of contacts in your contact list. On any ordinary day, you need to find a particular contact and his/her telephone number. However, as the contact list is not organized in any order, you have to check it contact by contact until you find the desired one. This approach is horrible, don't you agree? Imagine that you have to search for a contact in Yellow Pages and it is not organized! It could take forever!`
+- `For this reason, among others, we need to organize sets of information, such as the information we have stored in data structures. Sorting and searching algorithms are widely used in the daily problems we have to solve.`
+- `In this chapter, you will learn about the most commonly used sorting and searching algorithms, such as the bubble sort, selection sort, insertion sort, merge sort, quick sort, and heap sort as well as the sequential and binary search algorithms.`
+- `The sorting algorithms`
+- `From this introduction, you should understand that you need to learn how to sort first and then search for the information given. In this section, we will cover some of the most wellknown sorting algorithms in computer science. We will start with the slowest one, and then we will cover some better algorithms.`
+- `Before we get started with the sorting algorithms, let's create an array (list) to represent the data structure that we want to sort and search, as follows:`
+- `function ArrayList(){   var array = []; //{1}`
+- `this.insert = function(item){ //{2}`
+- `array.push(item);   };`
+- `this.toString= function(){ //{3}`
+- `return array.join();`
+- `As you can note, ArrayList is a simple data structure that stores the items in an array (line {1}). We only have an insert method to add elements to our data structure (line {2}), which simply uses the native push method of the JavaScript Array class that we covered in Chapter 2, Arrays. Finally, to help us verify the result, the toString method (line {3}) concatenates all the array's elements into a single string so that we can easily output the result in the browser's console using the join method from the native JavaScript Array class.`
+- `Note that this ArrayList class does not have any method to remove data or insert it into specific positions. We want to keep it simple so that we can focus on the sorting and searching algorithms. We will add all the sorting and searching methods to this class.`
+- `The bubble sort`
+- `When people first start learning sorting algorithms, they usually learn the bubble sort algorithm first, because it is the simplest of all the sorting algorithms. However, it is one of the worst-case sorting algorithms with respect to runtime, and you will see why.`
+- `The bubble sort algorithm compares every two adjacent items and swaps them if the first one is bigger than the second one. It has this name because the items tend to move up into the correct order, like bubbles rising to the surface.`
+- `Let's implement the bubble sort algorithm as follows:`
+- `this.bubbleSort = function(){`
+- `var length = array.length;           //{1}   for (var i=0; i<length; i++){        //{2}     for (var j=0; j<length-1; j++ ){ //{3}       if (array[j] > array[j+1]){  //{4}         swap(array, j, j+1);     //{5}`
+- `Now, we need to declare the swap function (a private function that is available only to the code inside the ArrayList class):`
+- `var swap = function(array, index1, index2){`
+- `var aux = array[index1];   array[index1] = array[index2];`
+- `To make the swap, we need a temporary variable to store the value of one of the items in. We will use this method for other sorting methods as well, and this is the reason we will declare this swap code into a function so that we can reuse it.`
+- `If we use ES6 (ECMAScript 2015), we can replace the preceding function with the following`
+- `The following diagram illustrates the bubble sort in action:`
+- `To test the bubble sort algorithm and get the same results shown by the diagram, we will use the following code:`
+- `function createNonSortedArray(size){ //{6}`
+- `var array = new ArrayList();   for (var i = size; i> 0; i--){`
+- `array.insert(i);`
+- `return array; }`
+- `var array = createNonSortedArray(5); //{7} console.log(array.toString());       //{8} array.bubbleSort();                  //{9} console.log(array.toString());       //{10}`
+- `To help us test the sorting algorithms that you will learn in this chapter, we will create a function that will automatically create a nonsorted array with the size that is passed by the parameter (line {6}). If we pass 5 as the parameter, the function will create the following array for us: [5, 4, 3, 2, 1]. Then, all we have to do is call this function and store its return value in a variable that contains the instance of the ArrayList class initialized with some numbers (line {7}). Just to make sure we have an unsorted array, we will output the array's content on console (line {8}), call the bubble sort method (line {9}), and output the array's content on console again so that we can verify that the array was sorted (line {10}).`
+- `You can find the complete source code of the ArrayList class and the testing code (with additional comments) on the source code that you downloaded from the support page (or from the GitHub repository).`
+- `Note that when the algorithm executes the second pass of the outer loop (the second section of the previous diagram), the numbers 4 and 5 are already sorted. Nevertheless, on subsequent comparisons, we will keep comparing them even if the comparison is not needed. For this reason, we will make a small improvement on the bubble sort algorithm.`
+- `The improved bubble sort`
+- `this.modifiedBubbleSort = function(){   var length = array.length;   for (var i=0; i<length; i++){     for (var j=0; j<length-1-i; j++ ){ //{1}`
+- `if (array[j] > array[j+1]){`
+- `The following diagram exemplifies how the improved bubble sort works:`
+- `though we made this small change to improve the bubble sort algorithm a`
+- `though we made this small change to improve the bubble sort algorithm a`
+- `The selection sort`
+- `The selection sort algorithm is an in-place comparison sort algorithm. The general idea of the selection sort is to find the minimum value in the data structure, place it in the first position, then find the second minimum value, place it in the second position, and so on.`
+- `The following is the source code for the selection sort algorithm:`
+- `this.selectionSort = function(){   var length = array.length,            //{1}`
+- `for (var i=0; i<length-1; i++){       //{2}     indexMin = i;                     //{3}     for (var j=i; j<length; j++){     //{4}       if(array[indexMin]>array[j]){ //{5}         indexMin = j;             //{6}`
+- `if (i !== indexMin){              //{7}`
+- `To test the selection sort algorithm, we can use the following code:`
+- `array = createNonSortedArray(5); console.log(array.toString()); array.selectionSort(); console.log(array.toString());`
+- `The following diagram exemplifies the selection sort algorithm in action based on our array, which is used in the preceding code [5, 4, 3, 2, 1]:`
+- `The selection sort is also an algorithm of complexity O(n2). Similar to the bubble sort, it contains two nested loops that are responsible for the quadratic complexity. However, the selection sort performs worse than the insertion sort algorithm that you will learn next.`
+- `The insertion sort`
+- `The insertion sort algorithm builds the final sorted array one item at a time. It assumes that the first element is already sorted. Then, a comparison with the second item is performed: should the second item stay in its place or be inserted before the first item? So, the first two items will get sorted, he comparison will take place with the third item (that is, should it be inserted in the first, second, or third position?), and so on.`
+- `The following code represents the insertion sort algorithm:`
+- `this.insertionSort = function(){   var length = array.length,            //{1}`
+- `for (var i=1; i<length; i++){         //{2}     j = i;                            //{3}     temp = array[i];                  //{4}     while (j>0 && array[j-1] > temp){ //{5}       array[j] = array[j-1];        //{6}`
+- `As usual, the first line of the algorithm is used to declare the variables we will use in the source code (line {1}). Then, we will iterate the array to find the correct place for the ith item (line {2}). Note that we started from the second position (index 1), instead of position 0 (as we considered the first item already sorted). Then, we  initiated an auxiliary variable with the value of i (line {3}), and we also stored the value in a temporary value (line {4}) so that we can insert it in the correct position later. The next step is finding the correct place to insert the item. As long as the j variable is bigger than  (because the first index of the array is  and there is no negative index) and the previous value in the array is bigger than the value we are comparing (line {5}), we will shift the previous value to the current position (line {6}) and decrease the value of j. At the end, we will insert the value in its correct position.`
+- `The following diagram exemplifies the insertion sort in action:`
+- `For example, suppose the array we are trying to sort is [3, 5, 1, 4, 2]. These values will be carried out in the steps performed by the insertion sort algorithm, as described in the following steps:`
+- `The value 3 is already sorted, so we will start sorting the second value of the array, which is the value 5. The value 3 is less than the value 5, so 5 stays in the same place (meaning the second position of the array). The values 3 and 5 are already sorted.`
+- `The next value to be sorted and inserted in the correct place is 1 (which is currently in the third position of the array). The value 5 is greater than 1, so 5 is shifted to the third position. We need to analyze whether 1 should be inserted in the second position—is 1 greater than 3? It's not, so the value 3 gets shifted to the second position. Next, we need to verify that 1 is inserted in the first position of the array. As 0 is the first position and there isn't a negative position, 1 needs to be inserted on the first position. The values 1, 3, and 5 are sorted.`
+- `(index 3), or does it need to be moved to a lower position? The value 4 is less than 5, so 5 will get shifted to index 3. Should we insert 4 in the index 2? The value 4 is greater than 3, so 4 is inserted in position 3 of the array.`
+- `The next value to be inserted is 2 (position 4 of array). The value 5 is greater than 2, so 5 gets shifted to the index 4. The value 4 is greater than 2, so 4 will also get shifted (position 3). The value 3 is also greater than 2, and 3 also gets shifted. The value 1 is less than 2, so 2 is inserted at the second position of the array. Thus, the array is sorted.`
+- `This algorithm has a better performance than the selection and bubble sort algorithms when sorting small arrays.`
+- `The merge sort`
+- `The merge sort algorithm is the first sorting algorithm that can be used in the real world. The three first sorting algorithms that you learned in this book do not give good performance, but the merge sort gives a good performance with a complexity of O(n log n).`
+- `The JavaScript Array class defines a sort function`
+- `(Array.prototype.sort) that can be used to sort arrays using JavaScript`
+- `(with no need to implement the algorithm ourselves). ECMAScript does not define which sorting algorithm needs to be used, so each browser can implement its own algorithm. For example, Mozilla Firefox uses the merge sort as the Array.prototype.sort implementation, while Chrome uses a variation of the quick sort (which you will learn next).`
+- `The merge sort is a divide-and-conquer algorithm. The idea behind it is to divide the original array into smaller arrays until each small array has only one position and then merge these smaller arrays into bigger ones until we have a single big array at the end that is sorted.`
+- `Because of the divide-and-conquer approach, the merge sort algorithm is also recursive, as follows:`
+- `this.mergeSort = function(){   array = mergeSortRec(array); };`
+- `As in the previous chapters, whenever we implement a recursive function, we always implement a helper function that will be executed. For the merge sort, we will do the same. We will declare the mergeSort method that will be available for use, and the mergeSort method will call mergeSortRec, which is a recursive function:`
+- `var mergeSortRec = function(array){   var length = array.length;   if(length === 1) {      //{1}     return array;       //{2}`
+- `var mid = Math.floor(length / 2),     //{3}   left = array.slice(0, mid),       //{4}   right = array.slice(mid, length); //{5}`
+- `return merge(mergeSortRec(left), mergeSortRec(right)); //{6} };`
+- `The merge sort will transform a bigger array into smaller arrays until they have only one item in them. As the algorithm is recursive, we need a stop condition—that is, if the array has a size equal to 1 (line {1}). If positive, we will return the array with size 1 (line {2}) because it is already sorted.`
+- `The next steps will be to call the merge function (line {6}), which will be responsible for merging and sorting the smaller arrays into bigger ones until we have the original array sorted and back together. To keep breaking the original array into smaller pieces, we will recursively call mergeSortRec again, passing the smaller array to the left as a parameter and another call for the array to the right. Execute the following code:`
+- `var merge = function(left, right){   var result = [], // {7}`
+- `if(left[il] < right[ir]) {       result.push(left[il++]);  // {9}`
+- `} else{`
+- `result.push(right[ir++]); // {10}`
+- `while (il < left.length){    // {11}`
+- `result.push(left[il++]);   }`
+- `while (ir < right.length){   // {12}     result.push(right[ir++]);   }`
+- `return result; // {13} };`
+- `The merge function receives two arrays and merges them into a bigger array. During the merge is when the sorting happens. First, we need to declare a new array that will be created for the merge and also declare two variables (line {7}) that will be used to iterate the two arrays (the left and right arrays). While we can iterate through the two arrays (line {8}), we will compare whether the item from the left array is less than the item from the right array. If positive, we will add the item from the left array to the merged result array and also increment the variable that is used to iterate the array (line {9}); otherwise, we will add the item from the right array and increment the variable that is used to iterate the array (line {10}).`
+- `Next, we will add every remaining item from the left array (line {11}) to the merged result array and do the same for the remaining items from the right array (line {12}). At the end, we will return a merged array as the result (line {13}).`
+- `Note that first the algorithm splits the original array until it has smaller arrays with a single element, and then it starts merging. While merging, it does the sorting as well until we have the original array completely back together and sorted.`
+- `The quick sort`
+- `The quick sort is probably the most used sorting algorithm. It has a complexity of O(n log n), and it usually performs better than other O(n log n) sorting algorithms. Similarly to the merge sort, it also uses the divide-and-conquer approach, dividing the original array into smaller ones (but without splitting them as the merge sort does) to do the sorting.`
+- `The quick sort algorithm is a little bit more complex than the other ones you have learned so far. Let's learn it step by step, as follows:`
+- `Next, the algorithm repeats the previous two steps for smaller arrays (subarrays with smaller values and then subarrays with greater values) until the arrays are completely sorted.`
+- `Let's start the implementation of the quick sort via the following code:`
+- `this.quickSort = function(){   quick(array,  0, array.length - 1); };`
+- `Similarly to the merge sort, we will start declaring the main method that will call the recursive function, passing the array that we want to sort along with index 0 and its last position (because we want to have the whole array sorted, not only a subset of it), as follows:`
+- `var quick = function(array, left, right){   var index; //{1}   if (array.length > 1) { //{2}     index = partition(array, left, right); //{3}`
+- `if (left < index - 1) {           //{4}       quick(array, left, index - 1);     //{5}     }`
+- `if (index < right) {                   //{6}       quick(array, index, right);        //{7}`
+- `First, we will have the index variable (line {1}), which will help us separate the subarray with smaller and greater values so that we can recursively call the quick function again.`
+- `We will obtain the index value as the return value of the partition function (line {3}).`
+- `If the size of the array is larger than 1 (because an array with a single element is already sorted at line {2}), we will execute the partition operation on the given subarray (the first call will pass the complete array) to obtain index (line {3}). If a subarray with smaller elements exists (line {4}), we will repeat the process for the subarray (line {5}). We will do the same thing for the subarray with greater values. If there is any subarray with a greater value (line {6}), we will repeat the quick sort process (line {7}) as well.`
+- `The first thing we need to do is choose the pivot element. There are a few ways in which we can do this. The simplest one is selecting the first item of the array (the leftmost item). However, studies show that this is not a good selection if the array is almost sorted, causing the worst behavior of the algorithm. Another approach is selecting a random item of the array or the middle item.`
+- `var partition = function(array, left, right) {`
+- `var pivot = array[Math.floor((right + left) / 2)], //{8}   i = left,                                      //{9}   j = right;                                     //{10}`
+- `while (i <= j) {                //{11}     while (array[i] < pivot) {  //{12}`
+- `while (array[j] > pivot) {  //{13}`
+- `if (i <= j) { //{14}       swap(array, i, j); //{15}`
+- `return i; //{16}`
+- `At the end of the partition operation, we will return the index of the left pointer that will be used to create the subarrays in line {3}.`
+- `The swap function is the same we created for the bubble sort algorithm at the beginning of this chapter. We can also replace this function with the following ES6 code:`
+- `The quick sort in action`
+- `Let's take a look at the quick sort algorithm in action step by step:`
+- `At the end, the greater subarray [6, 7] will also suffer the partition operation, completing the execution of the quick sort algorithm.`
+- `The heap sort`
+- `The heap sort is another efficient algorithm. The algorithm has this name because it sorts the array as if it were a binary tree. To do so, we need to manage the array as a binary tree considering the following information:`
+- `The heap sort algorithm is given as follows:`
+- `this.heapSort = function(){   var heapSize = array.length;   buildHeap(array); //{1}`
+- `while (heapSize > 1) {     heapSize--;`
+- `Then, as the second step, we will swap the first position (the bigger value in the array) with the last position of the current heap (line {2}). This way, the biggest value will be placed at its sorted position.`
+- `Step {2} might cancel the heap property. For this reason, we need to run a function called heapify that will transform the array into a heap again, meaning it will get the root of the current heap (the smaller value) and push it into the bottom of the tree again.`
+- `The buildHeap function is given as follows:`
+- `var buildHeap = function(array){   var heapSize = array.length;`
+- `for (var i = Math.floor(array.length / 2); i >= 0; i--) {`
+- `If we apply the preceding function to the [3,5,1,6,4,7,2] array, we will have the following steps until the heap is built:`
+- `Finally, we will have the heapify function similar to the following:`
+- `var heapify = function(array, heapSize, i){`
+- `var left = i * 2 + 1,   right = i * 2 + 2,   largest = i;`
+- `if (left < heapSize && array[left] > array[largest]) {`
+- `if (right < heapSize && array[right] > array[largest]) {`
+- `if (largest !== i) {     swap(array, i, largest);     heapify(array, heapSize, largest);`
+- `After the heap is ready, we can start the heap sort algorithm. These will be the steps {2} and {3} applied to the array.`
+- `The counting, bucket, and radix sorts (the distribution sorts)`
+- `So far, you have learned how to sort an array without using any auxiliary data structure. There is also another type of sorting algorithm called the distribution sort in which the data is distributed from the original array in multiple intermediate structures (buckets), which are then gathered and placed on the original array.`
+- `The most famous distribution algorithms are the counting sort, bucket sort, and radix sort. These three algorithms are very similar.`
+- `Now, let's talk about searching algorithms. If we take a look at the algorithms we implemented in previous chapters, such as the search method of the BinarySearchTree class (Chapter 8, Trees) or the indexOf method of the LinkedList class (Chapter 5, Linked Lists), these are all search algorithms, and of course, each one was implemented according to the behavior of its data structure. So we are already familiar with two-search algorithm; we just do not know their “official” names yet!`
+- `The sequential search`
+- `The sequential or linear search is the most basic search algorithm. It consists of comparing each element of the data structure with the one we are looking for. It is also the most inefficient one.`
+- `this.sequentialSearch = function(item){   for (var i=0; i<array.length; i++){ //{1}     if (item === array[i]){         //{2}       return i;                   //{3}`
+- `return -1;  //{4} };`
+- `The sequential search iterates through the array (line {1}) and compares each item with the value we are searching for (line {2}). If we find it, we can return something to indicate that we found it. We can return the item itself, the value true, or its index (line {3}). In the preceding implementation, we returned the index of the item. If we don't find the item, we can return -1 (line {4}), indicating that the index does not exist; the values false and null are among other options.`
+- `Suppose we have the [5, 4, 3, 2, 1] array and we are looking for the value 3, then the following diagram shows the steps of the sequential search:`
+- `The binary search`
+- `The binary search algorithm works similar to the number guessing game, in which someone says “I'm thinking of a number between 1 and 100”. We will begin by responding with a number, and the person will say “higher”, “lower”, or that we got it right.`
+- `To make the algorithm work, the data structure needs to be sorted first. These are the steps that the algorithm follows:`
+- `this.binarySearch = function(item){   this.quickSort();  //{1}`
+- `var low = 0,                 //{2}   high = array.length - 1, //{3}   mid, element;`
+- `while (low <= high){ //{4}`
+- `mid = Math.floor((low + high) / 2); //{5}     element = array[mid];               //{6}     if (element < item) {               //{7}       low = mid + 1;                  //{8}     } else if (element > item) {        //{9}       high = mid - 1;                 //{10}`
+- `} else {`
+- `return mid;                     //{11}`
+- `return -1; //{12} };`
+- `To get started, the first thing we need to do is sort the array. We can use any algorithm we implemented in the Sorting algorithms section. The quick sort was chosen for this implementation (line {1}). After the array is sorted, we will set the low (line {2}) and high (line {3}) pointer (which will work as boundaries).`
+- `While low is lower than high (line {4}), in this case, low is greater than high , which means that the value does not exist. So, we will return -1 (line {12}), find the middle index (line {5}), and hence have the value of the middle item (line {6}). Then, we will start comparing whether the selected value is less than the value we are looking for (line {7}), and we need to go lower (line {8}) and start over. If the selected value is greater than the value we are looking for (line {9}), we need to go higher (line {10}) and start over. Otherwise, it means that the value is equal to the value we are looking for, therefore we will return its index (line {11}).`
+- `Given the array in the following diagram, let's try to search for the value 2. These are the steps that the algorithm will perform:`
+- `BinarySearchTree`
+- `class we implemented in`
+- `search`
+- `method, which is exactly the same as the binary search but`
+- `BinarySearchTree`
+- `class we implemented in`
+- `search`
+- `method, which is exactly the same as the binary search but`
+- `In this chapter, you learned about sorting and searching algorithms. You learned the bubble, selection, insertion, merge, quick, and heap sort algorithms, which are used to sort data structures. You also learned the sequential search and binary search (which required the data structure to be sorted already).`
